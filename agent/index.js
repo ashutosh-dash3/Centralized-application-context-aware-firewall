@@ -38,22 +38,24 @@ class EndpointAgent {
   /**
    * Generate a unique device ID based on hostname and MAC address
    */
-  generateDeviceId() {
-    const networkInterfaces = os.networkInterfaces();
-    let macAddress = 'unknown';
-    
-    // Get first non-internal interface MAC address
-    for (const iface of Object.values(networkInterfaces)) {
-      for (const config of iface) {
-        if (!config.internal && config.mac !== '00:00:00:00:00:00') {
-          macAddress = config.mac.replace(/:/g, '-');
-          break;
-        }
+ generateDeviceId() {
+  const os = require('os');
+  const networkInterfaces = os.networkInterfaces();
+  let macAddress = 'unknown';
+
+  for (const iface of Object.values(networkInterfaces)) {
+    for (const config of iface) {
+      if (!config.internal && config.mac !== '00:00:00:00:00:00') {
+        macAddress = config.mac.replace(/:/g, '-');
+        break;
       }
     }
-    
-    return `${this.hostname}-${macAddress}`;
   }
+
+  const hostname = os.hostname() || "unknown-device";
+
+  return `${hostname}-${macAddress}`;
+}
 
   /**
    * Get primary IP address
