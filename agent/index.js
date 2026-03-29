@@ -14,7 +14,7 @@ const FirewallManager = require('./firewallManager');
 class EndpointAgent {
   constructor() {
     // Configuration
-    this.backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+    this.backendUrl = process.env.BACKEND_URL || 'https://centralized-application-context-aware.onrender.com';
     this.deviceId = this.generateDeviceId();
     this.hostname = os.hostname();
     this.ipAddress = this.getPrimaryIPAddress();
