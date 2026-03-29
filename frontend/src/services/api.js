@@ -5,6 +5,9 @@ import axios from 'axios';
  */
 const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api';
 
+console.log("🌐 API Base URL:", API_BASE_URL);
+console.log("🌐 Environment:", import.meta.env.MODE);
+
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -30,7 +33,16 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('[API] Response error:', error.message);
+    if (error.code === 'ECONNABORTED') {
+      console.error('[API] Request timeout - please check your connection');
+    } else if (error.response) {
+      console.error('[API] Server error:', error.response.status, error.response.data);
+    } else if (error.request) {
+      console.error('[API] Network error - cannot reach server at', API_BASE_URL);
+      console.error('[API] Check CORS settings and backend availability');
+    } else {
+      console.error('[API] Error:', error.message);
+    }
     return Promise.reject(error);
   }
 );
@@ -47,6 +59,17 @@ export const logsAPI = {
   
   // Send logs (used by agent)
   sendLogs: (data) => api.post('/logs', data)
+};
+
+/**
+ * Health Check API
+ */
+export const healthAPI = {
+  // Check if backend is reachable
+  check: () => api.get('/health'),
+  
+  // Get server info
+  getInfo: () => api.get('/')
 };
 
 /**
